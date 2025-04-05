@@ -10,6 +10,13 @@ plugins {
 	id 'java'
 	//id 'eclipse' // optional (to generate Eclipse project files)
 	id 'idea' // optional (to generate IntelliJ IDEA project files)
+	id 'application'
+}
+
+if (project.hasProperty('mainClass')) {
+    application {
+        mainClass = project.getProperty('mainClass')
+    }
 }
 
 repositories {
