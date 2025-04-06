@@ -1,4 +1,4 @@
-package weatherstation;
+package weatherstationmodified;
 
 public class ForecastDisplay implements Observer, DisplayElement {
 	private float currentPressure = 29.92f;  
@@ -10,9 +10,9 @@ public class ForecastDisplay implements Observer, DisplayElement {
 		weatherData.registerObserver(this);
 	}
 
-	public void update(float temp, float humidity, float pressure) {
+	public void update() {
         lastPressure = currentPressure;
-		currentPressure = pressure;
+		currentPressure = this.weatherData.getPressure();
 
 		display();
 	}

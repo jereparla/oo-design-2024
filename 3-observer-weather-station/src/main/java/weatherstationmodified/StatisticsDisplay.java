@@ -1,4 +1,4 @@
-package weatherstation;
+package weatherstationmodified;
 
 public class StatisticsDisplay implements Observer, DisplayElement {
 	private float maxTemp = 0.0f;
@@ -12,7 +12,8 @@ public class StatisticsDisplay implements Observer, DisplayElement {
 		weatherData.registerObserver(this);
 	}
 
-	public void update(float temp, float humidity, float pressure) {
+	public void update() {
+		float temp = this.weatherData.getTemperature();
 		tempSum += temp;
 		numReadings++;
 
