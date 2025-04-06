@@ -13,7 +13,8 @@ public class PrimeCalculationStrategyTest {
     static Stream<PrimeCalculationStrategy> strategyProvider() {
         return Stream.of(
             new NaivePrimeStrategy(),
-            new SieveOfEratosthenesStrategy()
+            new SieveOfEratosthenesStrategy(),
+            new MillerRabinStrategy()
         );
     }
     

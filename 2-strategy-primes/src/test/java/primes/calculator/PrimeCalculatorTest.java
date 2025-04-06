@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import primes.outputs.ConsoleOutputStrategy;
 import primes.outputs.FileOutputStrategy;
+import primes.strategies.MillerRabinStrategy;
 import primes.strategies.NaivePrimeStrategy;
 import primes.strategies.PrimeCalculationStrategy;
 import primes.strategies.SieveOfEratosthenesStrategy;
@@ -21,7 +22,8 @@ public class PrimeCalculatorTest {
     static Stream<PrimeCalculationStrategy> strategyProvider() {
         return Stream.of(
             new NaivePrimeStrategy(),
-            new SieveOfEratosthenesStrategy()
+            new SieveOfEratosthenesStrategy(),
+            new MillerRabinStrategy()
         );
     }
 
