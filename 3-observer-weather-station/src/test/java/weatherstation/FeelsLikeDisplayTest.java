@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class FeelsLikeDisplayTest {
 
     @Test
-    public void testHeatIndexDisplay() {
+    public void testFeelsLikeDisplay() {
         WeatherData weatherData = new WeatherData();
         FeelsLikeDisplay feelsLikeDisplay = new FeelsLikeDisplay(weatherData);
 
