@@ -1,79 +1,66 @@
 package game.simulator;
 
-import game.characters.Archer;
+import game.characters.*;
 import game.characters.Character;
-import game.characters.Knight;
-import game.characters.Orc;
-import game.characters.Wizard;
-import game.weapons.Axe;
-import game.weapons.MagicStaff;
-import game.weapons.MagicWand;
-import game.weapons.Spear;
+import game.logging.*;
+import game.weapons.*;
 
 public class GameSimulator {
+
     public static void main(String[] args) {
-        System.out.println("=== Action Adventure Game Simulator ===\n");
+        System.out.println("=== Action Adventure Game Simulator with Observer Pattern ===\n");
         
-        Character knight = new Knight("Aragorn");
+        ConsoleLogger consoleLogger = new ConsoleLogger();
+        FileLogger fileLogger = new FileLogger("battle_log.txt");
+        StatisticsLogger statsLogger = new StatisticsLogger();
+        
+        // First battle with console logger only
+        System.out.println("===== BATTLE 1: Knight vs Wizard (Console Logger) =====");
+        Battle battle1 = new Battle();
+        battle1.registerObserver(consoleLogger);
+        
+        Character knight = new Knight("Isildur");
         Character wizard = new Wizard("Radagast");
-        Character orc = new Orc("Count Grishnack");
-        Character archer = new Archer("Legolas");
+        battle1.fight(knight, wizard);
         
-        System.out.println("Initial characters:");
-        System.out.println(knight.display());
-        System.out.println(wizard.display());
-        System.out.println(orc.display());
-        System.out.println();
+        // Second battle with both console and file loggers
+        System.out.println("===== BATTLE 2: Orc vs Knight (Console + File Loggers) =====");
+        Battle battle2 = new Battle();
+        battle2.registerObserver(consoleLogger);
+        battle2.registerObserver(fileLogger);
         
-        // Change of weapons
-        System.out.println("Knight changes weapon to Axe:");
-        knight.setWeapon(new Axe());
-        System.out.println(knight.display());
-        System.out.println();
-        
-        System.out.println("===== BATTLE 1: Knight vs Wizard =====");
-        knight = new Knight("Isildur");
-        String battleResult1 = Battle.fight(knight, wizard);
-        System.out.println(battleResult1);
-        System.out.println();
-        
-        System.out.println("===== BATTLE 2: Orc vs Knight =====");
+        Character orc = new Orc("Boldog");
         knight = new Knight("Anarion");
-        orc = new Orc("Boldog");
-        String battleResult2 = Battle.fight(orc, knight);
-        System.out.println(battleResult2);
-        System.out.println();
+        battle2.fight(orc, knight);
         
-        System.out.println("===== BATTLE 3: Orc vs Archer =====");
-        orc = new Orc("Baldur");
-        String battleResult3 = Battle.fight(orc, archer);
-        System.out.println(battleResult3);
-        System.out.println();
-
-        // Show combat type restrictions
-        System.out.println("===== COMBAT TYPE RESTRICTIONS DEMO =====");
-        knight = new Knight("Anardil");
-        try {
-            System.out.println("Trying to give knight a magic staff...");
-            knight.setWeapon(new MagicStaff());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        // Third battle with all loggers
+        System.out.println("===== BATTLE 3: Knight vs Archer (All Loggers) =====");
+        Battle battle3 = new Battle();
+        battle3.registerObserver(consoleLogger);
+        battle3.registerObserver(fileLogger);
+        battle3.registerObserver(statsLogger);
         
-        try {
-            System.out.println("\nTrying to give wizard an axe...");
-            wizard.setWeapon(new Axe());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        knight = new Knight("Elendil");
+        Character archer = new Archer("Legolas");
+        battle3.fight(knight, archer);
         
-        // Show compatible weapon change
-        System.out.println("\nChanging wizard weapon to wand (compatible):");
-        wizard.setWeapon(new MagicWand());
-        System.out.println(wizard.display());
-
-        System.out.println("\nChanging archer weapon to spear (compatible):");
-        archer.setWeapon(new Spear());
-        System.out.println(archer.display());
+        // Fourth battle with dynamically changing loggers
+        System.out.println("\n===== BATTLE 4: Wizard vs Orc (Dynamic Loggers) =====");
+        Battle battle4 = new Battle();
+        battle4.registerObserver(consoleLogger);
+        battle4.registerObserver(statsLogger);
+        
+        wizard = new Wizard("Gandalf");
+        orc = new Orc("Azog");
+        wizard.setWeapon(new MagicWand()); // Change weapon
+        
+        // Run the battle
+        battle4.fight(wizard, orc);
+        
+        // Print overall statistics
+        statsLogger.printStatistics();
+        
+        // Close file logger
+        fileLogger.close();
     }
 }

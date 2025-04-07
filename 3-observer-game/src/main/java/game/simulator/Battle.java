@@ -1,13 +1,51 @@
 package game.simulator;
 
 import game.characters.Character;
+import game.logging.BattleObserver;
+import game.logging.BattleSubject;
 
-public class Battle {
+import java.util.ArrayList;
+import java.util.List;
 
-    public static String fight(Character character1, Character character2) {
+public class Battle implements BattleSubject {
+    private List<BattleObserver> observers = new ArrayList<>();
+
+    public void registerObserver(BattleObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(BattleObserver observer) {
+        observers.remove(observer);
+    }
+
+    protected void notifyBattleStart(Character fighter1, Character fighter2) {
+        for (BattleObserver observer : observers) {
+            observer.onBattleStart(fighter1, fighter2);
+        }
+    }
+
+    protected void notifyAttack(Character attacker, Character defender) {
+        for (BattleObserver observer : observers) {
+            observer.onAttack(attacker, defender);
+        }
+    }
+
+    protected void notifyCharacterDeath(Character character) {
+        for (BattleObserver observer : observers) {
+            observer.onCharacterDeath(character);
+        }
+    }
+
+    protected void notifyBattleEnd(Character winner, Character loser) {
+        for (BattleObserver observer : observers) {
+            observer.onBattleEnd(winner, loser);
+        }
+    }
+
+    public void fight(Character character1, Character character2) {
         StringBuilder battleLog = new StringBuilder();
 
-        battleIntro(battleLog, character1, character2);
+        notifyBattleStart(character1, character2);
 
         Character attacker = character1;
         Character defender = character2;
@@ -16,7 +54,11 @@ public class Battle {
         while (character1.isAlive() && character2.isAlive()) {
             battleLog.append("Round ").append(round++).append(": ");
             
-            performAttack(battleLog, attacker, defender);
+            performAttack(attacker, defender);
+            
+            if (!defender.isAlive()) {
+                notifyCharacterDeath(defender);
+            }
             
             // Swap roles
             Character temp = attacker;
@@ -24,39 +66,16 @@ public class Battle {
             defender = temp;
         }
         
-        battleConclusion(battleLog, character1, character2);
-        
-        return battleLog.toString();
-    }
-    
-    private static void battleIntro(StringBuilder log, Character fighter1, Character fighter2) {
-        log.append("BATTLE BEGINS!\n");
-        log.append("Fighter 1: ").append(fighter1.display()).append("\n");
-        log.append("Fighter 2: ").append(fighter2.display()).append("\n\n");
-    }
-    
-    private static void performAttack(StringBuilder log, Character attacker, Character defender) {
-        int damage = attacker.attack();
-        defender.receiveAttack(damage);
-        
-        log.append(attacker.getName())
-           .append(" attacks for ")
-           .append(damage)
-           .append(" damage. ")
-           .append(defender.getName())
-           .append(" health: ")
-           .append(defender.getHealth())
-           .append("\n");
-    }
-    
-    private static void battleConclusion(StringBuilder log, Character character1, Character character2) {
         Character winner = character1.isAlive() ? character1 : character2;
         Character loser = character1.isAlive() ? character2 : character1;
         
-        log.append("\nBATTLE ENDS! ")
-           .append(winner.getName())
-           .append(" defeats ")
-           .append(loser.getName())
-           .append("!");
+        notifyBattleEnd(winner, loser);
+    }
+    
+    private void performAttack(Character attacker, Character defender) {
+        int damage = attacker.attack();
+        defender.receiveAttack(damage);
+           
+        notifyAttack(attacker, defender);
     }
 }
